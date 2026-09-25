@@ -45,12 +45,8 @@ export async function runStructured<T>(
       },
     ],
     config: {
-      responseFormat: {
-        text: {
-          mimeType: "application/json",
-          schema: z.toJSONSchema(schema, { target: "draft-07" }),
-        },
-      },
+      responseMimeType: "application/json",
+      responseSchema: z.toJSONSchema(schema, { target: "draft-07" }),
       ...(options.webSearch ? { tools: [{ googleSearch: {} }] } : {}),
     },
   });
