@@ -1,7 +1,10 @@
 import "dotenv/config";
+import type { StudioState } from "./schemas/protocol.js";
+
 process.env.MOCK_MODE = "true";
 
 const { buildStudioGraph } = await import("./workflow/studioGraph.js");
+
 const initial: StudioState = {
   task_id: "SMOKE-001",
   original_request: "Buat ringkasan singkat tentang fungsi Seiyaaa Studio.",
