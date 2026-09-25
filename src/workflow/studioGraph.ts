@@ -120,6 +120,7 @@ async function researcher(input: { state: StudioState }) {
     problem_breakdown: state.problem_breakdown,
     questions_to_answer: state.questions_to_answer,
     assumptions: state.assumptions,
+    review_issues: state.issues,
   });
 
   const result = await runStructured(
@@ -158,6 +159,7 @@ async function producer(input: { state: StudioState }) {
     success_criteria: state.success_criteria,
     findings: state.findings,
     unresolved: state.unresolved,
+    review_issues: state.issues,
   });
 
   const result = await runStructured(
@@ -224,6 +226,38 @@ async function reviewer(input: { state: StudioState }) {
 
 async function spvFinal(input: { state: StudioState }) {
   const state = input.state;
+
+  if (state.verdict !== "PASS") {
+    const message =
+      state.verdict === "FAIL"
+        ? "Hasil belum dapat diselesaikan secara aman karena reviewer menandai task sebagai FAIL."
+        : "Hasil belum memenuhi kriteria setelah batas revisi tercapai.";
+
+    const flags = [
+      ...state.issues,
+      ...state.unresolved,
+      ...state.gaps_acknowledged,
+    ].filter((value, index, all) => value && all.indexOf(value) === index);
+
+    return patch(
+      state,
+      {
+        final_output: message,
+        summary_of_process:
+          "SPV menghentikan finalisasi karena hasil belum lolos review.",
+        flags_for_user:
+          flags.length > 0 ? flags : ["Perlu intervensi atau revisi manual."],
+        status: "BLOCKED",
+      },
+      record(
+        "SPV_FINAL",
+        "SPV",
+        "Menghentikan finalisasi dan melakukan eskalasi.",
+        "Task belum layak dikirim sebagai hasil final.",
+      ),
+    );
+  }
+
   const payload = JSON.stringify({
     original_request: state.original_request,
     success_criteria: state.success_criteria,

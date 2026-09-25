@@ -27,8 +27,9 @@ USER -> SPV (Intake) -> ANALYST -> RESEARCHER -> PRODUCER -> ANALYST (Review) ->
 2. Keep MOCK_MODE=true for a no-cost dry run.
 3. Set GEMINI_API_KEY and MOCK_MODE=false for live execution.
 4. Install dependencies with npm install.
-5. Run with: npm run dev -- "permintaan kamu"
-6. Build with: npm run build
+5. Run smoke test with: npm run smoke
+6. Run with: npm run dev -- "permintaan kamu"
+7. Build with: npm run build
 
 ## Design rule
 
